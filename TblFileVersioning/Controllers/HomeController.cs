@@ -23,7 +23,7 @@ namespace TblFileVersioning.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Search()
         {
             return View();
         }

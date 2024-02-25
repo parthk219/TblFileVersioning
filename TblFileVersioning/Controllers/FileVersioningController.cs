@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 //using System.Web.Mvc;
 using TblFileVersioning.Models;
 
-namespace YourNamespace.Controllers
+namespace TblFileVersioning.Controllers
 {
     [Route("FileVersioning")]
     public class FileVersioningController : Controller
@@ -149,7 +149,8 @@ namespace YourNamespace.Controllers
             }
         }
 
-        public FileVersioningModel GetFileVersionById(int id)
+        [HttpGet("GetFile")]
+        public ActionResult<FileVersioningModel> GetFileVersionByProperties(string fileType, string languageCode, string productCode)
         {
             FileVersioningModel fileVersion = null;
 
@@ -157,11 +158,13 @@ namespace YourNamespace.Controllers
             {
                 connection.Open();
 
-                string query = "SELECT * FROM tblFileVersioning WHERE Id = @Id";
+                string query = "SELECT * FROM tblFileVersioning WHERE FileType = @FileType AND LanguageCode = @LanguageCode AND ProductCode = @ProductCode";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", id);
+                    command.Parameters.AddWithValue("@FileType", fileType);
+                    command.Parameters.AddWithValue("@LanguageCode", languageCode);
+                    command.Parameters.AddWithValue("@ProductCode", productCode);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -188,10 +191,10 @@ namespace YourNamespace.Controllers
                 }
             }
 
-            return fileVersion;
-
-
+            return Json(fileVersion); 
         }
+
+
     }
 }
 
