@@ -149,7 +149,7 @@ namespace TblFileVersioning.Controllers
             }
         }
 
-        [HttpGet("GetFile")]
+        [HttpPost("GetFile")]
         public ActionResult<FileVersioningModel> GetFileVersionByProperties(string fileType, string languageCode, string productCode)
         {
             FileVersioningModel fileVersion = null;
@@ -191,7 +191,7 @@ namespace TblFileVersioning.Controllers
                 }
             }
 
-            return Json(fileVersion); 
+            return Json(fileVersion);
         }
 
 

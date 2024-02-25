@@ -1,109 +1,284 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</head>
-<body>
+﻿<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+<!-- Bootstrap and Font Awesome links (remove if not needed) -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4 col-md-offset-4" >
-                Product Code
-                <input type="text" id="txtProductCode" class="form-control" />
-                File Type
-                <input type="text" id="txtFileType" class="form-control" />
-                Language Code
-                <input type="text" id="txtLanguageCode" class="form-control" />
-                <br /><br />
-                <button class="btn btn-success" id="btnSearchFileVersion" style="marker-mid">Find File Version Record</button>
-            </div>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form>
+                <div class="form-group">
+                    <label for="fileTypeInput">File Type:</label>
+                    <input type="text" class="form-control" id="fileTypeInput">
+                </div>
+                <div class="form-group">
+                    <label for="languageCodeInput">LanguageCode:</label>
+                    <input type="text" class="form-control" id="languageCodeInput">
+                </div>
+                <div class="form-group">
+                    <label for="productCodeInput">ProductCode:</label>
+                    <input type="text" class="form-control" id="productCodeInput">
+                </div>
+                <button type="button" class="btn btn-primary" onclick="getFileVersion()">Get File Version</button>
+            </form>
         </div>
     </div>
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-10">
-                <table class='table table-responsive' id="fileVersioningTable">
-                    <thead>
-                        <tr>
-                            <th>File Version ID</th>
-                            <th>Group Code</th>
-                            <th>SubGroup Code</th>
-                            <th>Product Code</th>
-                            <th>Purchase Path</th>
-                            <th>Version Date</th>
-                            <th>File Path</th>
-                            <th>File Name</th>
-                            <th>File Code</th>
-                            <th>File Type</th>
-                            <th>Domain Id</th>
-                            <th>Language Code</th>
-                            <th>Country Code</th>
-                            <th>DELETE</th>
-                            <th>EDIT</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fileVersioningTableBody"></tbody>
-                </table>
-            </div>
-            <div class="col-sm-1"></div>
-        </div>
-    </div>
+</div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<div class="container mt-5">
+    <table id="resultTable" class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>FileVersionId</th>
+                <th>GroupCode</th>
+                <th>SubGroupCode</th>
+                <th>ProductCode</th>
+                <th>PurchasePath</th>
+                <th>VersionDate</th>
+                <th>FilePath</th>
+                <th>FileName</th>
+                <th>FileCode</th>
+                <th>FileType</th>
+                <th>DomainId</th>
+                <th>LanguageCode</th>
+                <th>CountryCode</th>
+                <th>Delete</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Results will be appended here -->
+        </tbody>
+    </table>
+</div>
 
-    <script>
-        $(document).ready(function () {
-            $("#btnSearchFileVersion").click(function () {
-                var productCode = $("#txtProductCode").val();
-                var fileType = $("#txtFileType").val();
-                var languageCode = $("#txtLanguageCode").val();
-                $.ajax({
-                    type: "GET",
-                    url: "/FileVersioning/GetFile",
-                    data: {
-                        ProductCode: productCode,
-                        FileType: fileType,
-                        LanguageCode: languageCode,
-                    },
-                    success: function (response) {
-                        console.log("Data received:", response);
-                        var tab = "";
-                        for (var i = 0; i < response.length; i++) {
-                            tab += "<tr>";
-                            for (var property in response[i]) {
-                                if (response[i].hasOwnProperty(property)) {
-                                    tab += "<td>" + formatFieldValue(response[i][property]) + "</td>";
-                                }
-                            }
-                            tab += "<td><span class='fa fa-trash spd' style='color:red;font-size:22px'></span></td>";
-                            tab += "<td><span class='fa fa-edit spd' style='color:green;font-size:22px'></span></td>";
-                            tab += "</tr>";
-                        }
-                        $('#fileVersioningTableBody').empty().append(tab);
-                    },
-                    error: function (xhr, textStatus, errorThrown) {
-                        console.log("Error: " + errorThrown);
-                        alert("Something went wrong");
-                    }
-                });
-            });
+<script>
+    function getFileVersion() {
+        // Get values from input fields
+        var fileType = $("#fileTypeInput").val();
+        var languageCode = $("#languageCodeInput").val();
+        var productCode = $("#productCodeInput").val();
 
-            function formatFieldValue(value) {
-                if (value instanceof Date && !isNaN(value)) {
-                    return value.toLocaleDateString();
-                } else {
-                    return value !== undefined ? value.toString() : "undefined";
-                }
+        // Make an Ajax request
+        $.ajax({
+            type: "POST",
+            url: "/FileVersioning/GetFile",
+            data: {
+                fileType: fileType,
+                languageCode: languageCode,
+                productCode: productCode
+            },
+            success: function (data) {
+                console.log(data);
+                updateTable(data);
+            },
+            error: function (error) {
+                // Handle the error response
+                console.error("Error fetching file version:", error);
             }
         });
-    </script>
+    }
 
-</body>
-</html>
+    function updateTable(data) {
+        $("#resultTable tbody").empty();
+
+        // Check if data is not null
+        if (data != null) {
+            // Append a new row with formatted fields to the table
+            $("#resultTable tbody").append(
+                "<tr>" +
+                "<td>" + formatFieldValue(data.fileversionid) + "</td>" +
+                "<td>" + formatFieldValue(data.groupCode) + "</td>" +
+                "<td>" + formatFieldValue(data.subGroupCode) + "</td>" +
+                "<td>" + formatFieldValue(data.productCode) + "</td>" +
+                "<td>" + formatFieldValue(data.purchasePath) + "</td>" +
+                "<td>" + formatFieldValue(data.versionDate) + "</td>" +
+                "<td>" + formatFieldValue(data.filePath) + "</td>" +
+                "<td>" + formatFieldValue(data.fileName) + "</td>" +
+                "<td>" + formatFieldValue(data.fileCode) + "</td>" +
+                "<td>" + formatFieldValue(data.fileType) + "</td>" +
+                "<td>" + formatFieldValue(data.domainId) + "</td>" +
+                "<td>" + formatFieldValue(data.languageCode) + "</td>" +
+                "<td>" + formatFieldValue(data.countryCode) + "</td>" +
+                "<td><span class='fa fa-trash spd' style='color:red;font-size:22px'></span></td>" +
+                "<td><span class='fa fa-edit spd' style='color:red;font-size:22px'></span></td>" +
+                "</tr>"
+            );
+        }
+    }
+
+    $(document).ready(function () {
+        $('body').on('click', '#resultTable .fa-trash', function () {
+            var cRow = $(this).closest("tr");
+            var fileVersionId = cRow.find("td:eq(0)").text();
+            if (confirm("Are you sure you want to delete " + fileVersionId + "?")) {
+                $.ajax({
+                    url: "/FileVersioning/DeleteRecord",
+                    type: "DELETE",
+                    data: { id: fileVersionId },
+                    success: function (response) {
+                        alert("Deleted");
+                        location.reload();
+                    }
+                });
+            }
+        });
+    });
+
+    function formatFieldValue(value) {
+        if (value instanceof Date && !isNaN(value)) {
+            return value.toLocaleDateString();
+        } else {
+            return value !== undefined ? value.toString() : "";
+        }
+    }
+</script>
+
+
+
+
+@*-----------EDIT CODE---------------*@
+
+
+
+
+
+<div class="modal" tabindex="-1" role="dialog" id="editModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit File Version</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Edit Group Code</p>
+                <input type="text" id="updatedGroupCode" value=updatedGroupCode class="form-control">
+                <br />
+                <p>Edit Sub Group Code</p>
+                <input type="text" id="updatedSubGroupCode" value=updatedSubGroupCode class="form-control">
+                <br />
+                <p>Edit Product Code</p>
+                <input type="text" id="updatedProductCode" value=updatedProductCode class="form-control">
+                <br />
+                <p>Edit Purchase Path</p>
+                <input type="text" id="updatedPurchasePath" value=updatedPurchasePath class="form-control">
+                <br />
+                <p>Edit Version Date (YYYY-MM-DDTHH:MM:SS)</p>
+                <input type="text" id="updatedVersionDate" value=updatedVersionDate class="form-control">
+                <br />
+                <p>Edit File Path</p>
+                <input type="text" id="updatedFilePath" value=updatedFilePath class="form-control">
+                <br />
+                <p>Edit File Name</p>
+                <input type="text" id="updatedFileName" value=updatedFileName class="form-control">
+                <br />
+                <p>Edit File Code</p>
+                <input type="text" id="updatedFileCode" value=updatedFileCode class="form-control">
+                <br />
+                <p>Edit File Type</p>
+                <input type="text" id="updatedFileType" value=updatedFileType class="form-control">
+                <br />
+                <p>Edit DomainId</p>
+                <input type="text" id="updatedDomainId" value=updatedDomainId class="form-control">
+                <br />
+                <p>Edit LanguageCode</p>
+                <input type="text" id="updatedLanguageCode" value=updatedLanguageCode class="form-control">
+                <br />
+                <p>Edit Country Code</p>
+                <input type="text" id="updatedCountryCode" value=updatedCountryCode class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmEdit">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('body').on('click', '#resultTable .fa-edit', function () {
+        var cRow = $(this).closest("tr");
+        var fileVersionId = cRow.find("td:eq(0)").text();
+
+        //var existingFilePath = cRow.find("td:eq(index_of_filePath)").text();
+        var eGroupCode = cRow.find("td:eq(1)").text().trim();
+        var eSubGroupCode = cRow.find("td:eq(2)").text().trim();
+        var eProductCode = cRow.find("td:eq(3)").text().trim();
+        var ePurchasePath = cRow.find("td:eq(4)").text().trim();
+        var eVersionDate = cRow.find("td:eq(5)").text().trim();
+        var eFilePath = cRow.find("td:eq(6)").text().trim();
+        var eFileName = cRow.find("td:eq(7)").text().trim();
+        var eFileCode = cRow.find("td:eq(8)").text().trim();
+        var eFileType = cRow.find("td:eq(9)").text().trim();
+        var eDomainId = cRow.find("td:eq(10)").text().trim();
+        var eLanguageCode = cRow.find("td:eq(11)").text().trim();
+        var eCountryCode = cRow.find("td:eq(12)").text().trim();
+        //var existingFilePath = cRow.find("td:eq(2)").text().trim();
+
+
+
+        $('#updatedGroupCode').val(eGroupCode); //1
+        $('#updatedSubGroupCode').val(eSubGroupCode); //2
+        $('#updatedProductCode').val(eProductCode); //3
+        $('#updatedPurchasePath').val(ePurchasePath); //4
+        $('#updatedVersionDate').val(eVersionDate); //5
+        $('#updatedFilePath').val(eFilePath); //6
+        $('#updatedFileName').val(eFileName); //7
+        $('#updatedFileCode').val(eFileCode); //8
+        $('#updatedFileType').val(eFileType); //9
+        $('#updatedDomainId').val(eDomainId); //10
+        $('#updatedLanguageCode').val(eLanguageCode); //11
+        $('#updatedCountryCode').val(eCountryCode);     //12
+
+        $('#editModal').modal('show');
+
+        $('#confirmEdit').on('click', function () {
+            // Get updated values from modal inputs
+            var updatedGroupCode = $('#updatedGroupCode').val();
+            var updatedSubGroupCode = $('#updatedSubGroupCode').val();
+            var updatedProductCode = $('#updatedProductCode').val();
+            var updatedPurchasePath = $('#updatedPurchasePath').val();
+            var updatedVersionDate = $('#updatedVersionDate').val();
+            var updatedFilePath = $('#updatedFilePath').val();
+            var updatedFileName = $('#updatedFileName').val();
+            var updatedFileCode = $('#updatedFileCode').val();
+            var updatedFileType = $('#updatedFileType').val();
+            var updatedDomainId = $('#updatedDomainId').val();
+            var updatedLanguageCode = $('#updatedLanguageCode').val();
+            var updatedCountryCode = $('#updatedCountryCode').val();
+
+            $.ajax({
+                url: "/FileVersioning/UpdateRecord",
+                type: "PATCH",
+                data: {
+                    FileVersionId: fileVersionId,
+                    GroupCode: updatedGroupCode,
+                    SubGroupCode: updatedSubGroupCode,
+                    ProductCode: updatedProductCode,
+                    PurchasePath: updatedPurchasePath,
+                    VersionDate: updatedVersionDate,
+                    FilePath: updatedFilePath,
+                    FileName: updatedFileName,
+                    FileCode: updatedFileCode,
+                    FileType: updatedFileType,
+                    DomainId: updatedDomainId,
+                    LanguageCode: updatedLanguageCode,
+                    CountryCode: updatedCountryCode,
+                    //FileVersionId: fileVersionId,
+                    //FilePath: updatedFilePath,
+
+                },
+                success: function (response) {
+                    alert("SAVED CHANGES");
+                    $('#editModal').modal('hide');
+
+                    location.reload();
+                }
+            });
+        });
+    });
+</script>

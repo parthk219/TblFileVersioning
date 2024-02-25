@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = null;
+    ViewData["Title"] = "File Versioning Management";
 }
 
 <!DOCTYPE html>
@@ -14,12 +14,11 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container mt-5">
         <div class="row">
-            @*<div class="col-sm-1"></div>*@
             <div class="col-sm-10">
-                <table class='table table-responsive' id="fileVersioningTable">
-                    <thead>
+                <table class='table table-bordered table-striped'>
+                    <thead class="thead-dark">
                         <tr>
                             <th>File Version ID</th>
                             <th>Group Code</th>
@@ -41,10 +40,8 @@
                     <tbody id="fileVersioningTableBody"></tbody>
                 </table>
             </div>
-            <div class="col-sm-1"></div>
         </div>
     </div>
-
     <script>
         $(document).ready(function () {
             //
@@ -66,32 +63,10 @@
             });
 
 
-            //-------------------------------------------------------------------EDIT--------------------------------------------------
-            //$('body').on('click', '#fileVersioningTableBody .fa-edit', function () {
-            //    var cRow = $(this).closest("tr");
-            //    var fileVersionId = cRow.find("td:eq(0)").text();
-
-            //    if (confirm("Are you sure you want to delete " + fileVersionId + "?")) {
-            //        $.ajax({
-            //            url: "/FileVersioning/DeleteRecord",
-            //            type: "DELETE",
-            //            data: { id: fileVersionId },
-            //            success: function (response) {
-            //                alert("Deleted");
-            //                location.reload();
-            //            }
-            //        });
-            //    }
-            //});
-            //-------
-
-
-
-
 
          $.ajax({
             type: "GET",
-            url: "@Url.Action("FilesList", "FileVersioning")", 
+            url: "@Url.Action("FilesList", "FileVersioning")",
             success: function (data) {
                 var tab = "";
                 for (var i = 0; i < data.length; i++) {
@@ -204,7 +179,7 @@
         var eDomainId = cRow.find("td:eq(10)").text().trim();
         var eLanguageCode = cRow.find("td:eq(11)").text().trim();
         var eCountryCode = cRow.find("td:eq(12)").text().trim();
-                //var existingFilePath = cRow.find("td:eq(2)").text().trim();
+        //var existingFilePath = cRow.find("td:eq(2)").text().trim();
 
 
 
@@ -219,12 +194,12 @@
         $('#updatedFileType').val(eFileType); //9
         $('#updatedDomainId').val(eDomainId); //10
         $('#updatedLanguageCode').val(eLanguageCode); //11
-        $('#updatedCountryCode').val(eCountryCode);     //12 
+        $('#updatedCountryCode').val(eCountryCode);     //12
 
         $('#editModal').modal('show');
 
         $('#confirmEdit').on('click', function () {
-            // Get updated values from modal inputs   
+            // Get updated values from modal inputs
             var updatedGroupCode = $('#updatedGroupCode').val();
             var updatedSubGroupCode = $('#updatedSubGroupCode').val();
             var updatedProductCode = $('#updatedProductCode').val();
@@ -237,7 +212,7 @@
             var updatedDomainId = $('#updatedDomainId').val();
             var updatedLanguageCode = $('#updatedLanguageCode').val();
             var updatedCountryCode = $('#updatedCountryCode').val();
-           
+
             $.ajax({
                 url: "/FileVersioning/UpdateRecord",
                 type: "PATCH",
@@ -257,12 +232,12 @@
                     CountryCode: updatedCountryCode,
                     //FileVersionId: fileVersionId,
                     //FilePath: updatedFilePath,
-                 
+
                 },
                 success: function (response) {
                     // Close the modal
                     $('#editModal').modal('hide');
-                
+
                     location.reload();
                 }
             });
