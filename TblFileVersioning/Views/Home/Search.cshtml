@@ -56,12 +56,10 @@
 
 <script>
     function getFileVersion() {
-        // Get values from input fields
         var fileType = $("#fileTypeInput").val();
         var languageCode = $("#languageCodeInput").val();
         var productCode = $("#productCodeInput").val();
 
-        // Make an Ajax request
         $.ajax({
             type: "POST",
             url: "/FileVersioning/GetFile",
@@ -81,33 +79,66 @@
         });
     }
 
+    //function updateTable(data) {
+    //    $("#resultTable tbody").empty();
+
+    //    // Check if data is not null
+    //    if (data != null) {
+    //        // Append a new row with formatted fields to the table
+    //        $("#resultTable tbody").append(
+    //            "<tr>" +
+    //            "<td>" + formatFieldValue(data.fileversionid) + "</td>" +
+    //            "<td>" + formatFieldValue(data.groupCode) + "</td>" +
+    //            "<td>" + formatFieldValue(data.subGroupCode) + "</td>" +
+    //            "<td>" + formatFieldValue(data.productCode) + "</td>" +
+    //            "<td>" + formatFieldValue(data.purchasePath) + "</td>" +
+    //            "<td>" + formatFieldValue(data.versionDate) + "</td>" +
+    //            "<td>" + formatFieldValue(data.filePath) + "</td>" +
+    //            "<td>" + formatFieldValue(data.fileName) + "</td>" +
+    //            "<td>" + formatFieldValue(data.fileCode) + "</td>" +
+    //            "<td>" + formatFieldValue(data.fileType) + "</td>" +
+    //            "<td>" + formatFieldValue(data.domainId) + "</td>" +
+    //            "<td>" + formatFieldValue(data.languageCode) + "</td>" +
+    //            "<td>" + formatFieldValue(data.countryCode) + "</td>" +
+    //            "<td><span class='fa fa-trash spd' style='color:red;font-size:22px'></span></td>" +
+    //            "<td><span class='fa fa-edit spd' style='color:red;font-size:22px'></span></td>" +
+    //            "</tr>"
+    //        );
+    //    }
+    //}
+
     function updateTable(data) {
         $("#resultTable tbody").empty();
 
-        // Check if data is not null
-        if (data != null) {
-            // Append a new row with formatted fields to the table
-            $("#resultTable tbody").append(
-                "<tr>" +
-                "<td>" + formatFieldValue(data.fileversionid) + "</td>" +
-                "<td>" + formatFieldValue(data.groupCode) + "</td>" +
-                "<td>" + formatFieldValue(data.subGroupCode) + "</td>" +
-                "<td>" + formatFieldValue(data.productCode) + "</td>" +
-                "<td>" + formatFieldValue(data.purchasePath) + "</td>" +
-                "<td>" + formatFieldValue(data.versionDate) + "</td>" +
-                "<td>" + formatFieldValue(data.filePath) + "</td>" +
-                "<td>" + formatFieldValue(data.fileName) + "</td>" +
-                "<td>" + formatFieldValue(data.fileCode) + "</td>" +
-                "<td>" + formatFieldValue(data.fileType) + "</td>" +
-                "<td>" + formatFieldValue(data.domainId) + "</td>" +
-                "<td>" + formatFieldValue(data.languageCode) + "</td>" +
-                "<td>" + formatFieldValue(data.countryCode) + "</td>" +
-                "<td><span class='fa fa-trash spd' style='color:red;font-size:22px'></span></td>" +
-                "<td><span class='fa fa-edit spd' style='color:red;font-size:22px'></span></td>" +
-                "</tr>"
-            );
+        // Check if data is not null and is an array
+        if (data != null && Array.isArray(data)) {
+            // Iterate through the array and append rows to the table
+            data.forEach(function (item) {
+                $("#resultTable tbody").append(
+                    "<tr>" +
+                    "<td>" + formatFieldValue(item.fileversionid) + "</td>" +
+                    "<td>" + formatFieldValue(item.groupCode) + "</td>" +
+                    "<td>" + formatFieldValue(item.subGroupCode) + "</td>" +
+                    "<td>" + formatFieldValue(item.productCode) + "</td>" +
+                    "<td>" + formatFieldValue(item.purchasePath) + "</td>" +
+                    "<td>" + formatFieldValue(item.versionDate) + "</td>" +
+                    "<td>" + formatFieldValue(item.filePath) + "</td>" +
+                    "<td>" + formatFieldValue(item.fileName) + "</td>" +
+                    "<td>" + formatFieldValue(item.fileCode) + "</td>" +
+                    "<td>" + formatFieldValue(item.fileType) + "</td>" +
+                    "<td>" + formatFieldValue(item.domainId) + "</td>" +
+                    "<td>" + formatFieldValue(item.languageCode) + "</td>" +
+                    "<td>" + formatFieldValue(item.countryCode) + "</td>" +
+                    "<td><span class='fa fa-trash spd' style='color:red;font-size:22px'></span></td>" +
+                    "<td><span class='fa fa-edit spd' style='color:red;font-size:22px'></span></td>" +
+                    "</tr>"
+                );
+            });
         }
     }
+
+
+
 
     $(document).ready(function () {
         $('body').on('click', '#resultTable .fa-trash', function () {

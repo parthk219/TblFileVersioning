@@ -152,7 +152,9 @@ namespace TblFileVersioning.Controllers
         [HttpPost("GetFile")]
         public ActionResult<FileVersioningModel> GetFileVersionByProperties(string fileType, string languageCode, string productCode)
         {
-            FileVersioningModel fileVersion = null;
+            //FileVersioningModel fileVersion = null;
+            List<FileVersioningModel> fileVersions = new List<FileVersioningModel>();
+
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -168,9 +170,11 @@ namespace TblFileVersioning.Controllers
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.Read())
+                        //if (reader.Read())
+                        while (reader.Read())
+
                         {
-                            fileVersion = new FileVersioningModel
+                            FileVersioningModel fileVersion = new FileVersioningModel
                             {
                                 fileversionid = Convert.ToInt32(reader["fileversionid"]),
                                 GroupCode = reader["GroupCode"].ToString(),
@@ -186,12 +190,14 @@ namespace TblFileVersioning.Controllers
                                 LanguageCode = reader["LanguageCode"].ToString(),
                                 CountryCode = reader["CountryCode"].ToString()
                             };
+                            fileVersions.Add(fileVersion);
+
                         }
                     }
                 }
             }
 
-            return Json(fileVersion);
+            return Json(fileVersions);
         }
 
 
