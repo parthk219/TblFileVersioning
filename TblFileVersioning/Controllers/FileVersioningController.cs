@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 //using System.Web.Mvc;
 using TblFileVersioning.Models;
 
@@ -90,6 +92,65 @@ namespace TblFileVersioning.Controllers
                 }
             }
         }
+
+        //
+        [HttpPost("InsertPDFRecord")]
+        public void InsertPDFRecord(IFormFile file, FileVersioningModel fileVersion)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = @"
+            INSERT INTO tblFileVersioning (GroupCode, SubGroupCode, ProductCode, PurchasePath, VersionDate, FilePath, FileName, FileCode, FileType, DomainId, LanguageCode, CountryCode)
+            VALUES (@GroupCode, @SubGroupCode, @ProductCode, @PurchasePath, @VersionDate, @FilePath, @FileName, @FileCode, @FileType, @DomainId, @LanguageCode, @CountryCode)
+        ";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Set parameters for text data
+                    command.Parameters.AddWithValue("@GroupCode", fileVersion.GroupCode);
+                    command.Parameters.AddWithValue("@SubGroupCode", fileVersion.SubGroupCode);
+                    command.Parameters.AddWithValue("@ProductCode", fileVersion.ProductCode);
+                    command.Parameters.AddWithValue("@PurchasePath", fileVersion.PurchasePath);
+                    command.Parameters.AddWithValue("@VersionDate", fileVersion.VersionDate);
+                    command.Parameters.AddWithValue("@FilePath", fileVersion.FilePath);
+                    command.Parameters.AddWithValue("@FileName", fileVersion.FileName);
+                    command.Parameters.AddWithValue("@FileCode", fileVersion.FileCode);
+                    command.Parameters.AddWithValue("@FileType", fileVersion.FileType);
+                    command.Parameters.AddWithValue("@DomainId", fileVersion.DomainId);
+                    command.Parameters.AddWithValue("@LanguageCode", fileVersion.LanguageCode);
+                    command.Parameters.AddWithValue("@CountryCode", fileVersion.CountryCode);
+
+                    // Execute the query for text data
+                    command.ExecuteNonQuery();
+
+                    // Save the file to C drive
+                    if (file != null && file.Length > 0)
+                    {
+                        var filePath = Path.Combine("D:\\", fileVersion.FilePath, fileVersion.FileName);
+                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            file.CopyTo(stream);
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+        //
+
+
+
+
+
+
+
+
 
         [HttpPatch("UpdateRecord")]
 

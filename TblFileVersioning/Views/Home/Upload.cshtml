@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "File Versioning Management";
+}
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#btnSaveFileVersion").click(function () {
+            var groupCode = $("#txtGroupCode").val();
+            var subGroupCode = $("#txtSubGroupCode").val();
+            var productCode = $("#txtProductCode").val();
+            var purchasePath = $("#txtPurchasePath").val();
+            var versionDate = $("#txtVersionDate").val();
+            var filePath = $("#txtFilePath").val();
+            var fileName = $("#txtFileName").val();
+            var fileCode = $("#txtFileCode").val();
+            var fileType = $("#txtFileType").val();
+            var domainId = $("#txtDomainId").val();
+            var languageCode = $("#txtLanguageCode").val();
+            var countryCode = $("#txtCountryCode").val();
+
+            // Create FormData object
+            var formData = new FormData();
+            formData.append("GroupCode", groupCode);
+            formData.append("SubGroupCode", subGroupCode);
+            formData.append("ProductCode", productCode);
+            formData.append("PurchasePath", purchasePath);
+            formData.append("VersionDate", versionDate);
+            formData.append("FilePath", filePath);
+            formData.append("FileName", fileName);
+            formData.append("FileCode", fileCode);
+            formData.append("FileType", fileType);
+            formData.append("DomainId", domainId);
+            formData.append("LanguageCode", languageCode);
+            formData.append("CountryCode", countryCode);
+
+            // Append the file to FormData
+            var fileInput = $("#fileUpload")[0];
+            var file = fileInput.files[0];
+            formData.append("file", file);
+
+            $.ajax({
+                type: "POST",
+                url: "/FileVersioning/InsertPDFRecord",
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    alert("File Version Record Saved");
+                    // Reset input values
+                    $("#txtGroupCode").val("");
+                    $("#txtSubGroupCode").val("");
+                    $("#txtProductCode").val("");
+                    $("#txtPurchasePath").val("");
+                    $("#txtVersionDate").val("");
+                    $("#txtFilePath").val("");
+                    $("#txtFileName").val("");
+                    $("#txtFileCode").val("");
+                    $("#txtFileType").val("");
+                    $("#txtDomainId").val("");
+                    $("#txtLanguageCode").val("");
+                    $("#txtCountryCode").val("");
+                },
+                error: function () {
+                    alert("Something went wrong");
+                }
+            });
+        });
+    });
+</script>
+
+<div class="text-center">
+    <h1 class="display-4">File Versioning Management</h1>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            Group Code
+            <input type="text" id="txtGroupCode" class="form-control" />
+            SubGroup Code
+            <input type="text" id="txtSubGroupCode" class="form-control" />
+            Product Code
+            <input type="text" id="txtProductCode" class="form-control" />
+            Purchase Path
+            <input type="text" id="txtPurchasePath" class="form-control" />
+            Version Date
+            <input type="date" id="txtVersionDate" class="form-control" />
+            File Path
+            <input type="text" id="txtFilePath" class="form-control" />
+            File Name
+            <input type="text" id="txtFileName" class="form-control" />
+            File Code
+            <input type="text" id="txtFileCode" class="form-control" />
+            File Type
+            <input type="text" id="txtFileType" class="form-control" />
+            Domain Id
+            <input type="text" id="txtDomainId" class="form-control" />
+            Language Code
+            <input type="text" id="txtLanguageCode" class="form-control" />
+            File Upload
+            <input type="file" id="fileUpload" class="form-control" />
+            Country Code
+            <input type="text" id="txtCountryCode" class="form-control" />
+            <br /><br />
+            <button class="btn btn-success" id="btnSaveFileVersion">Save File Version Record</button>
+            <a href="/Home/display" class="btn btn-danger">Display Record</a>
+        </div>
+    </div>
+</div>

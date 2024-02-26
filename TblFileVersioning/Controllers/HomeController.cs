@@ -27,6 +27,10 @@ namespace TblFileVersioning.Controllers
         {
             return View();
         }
+        public IActionResult Upload()
+        {
+            return View();
+        }
 
         public ActionResult display()
         {
